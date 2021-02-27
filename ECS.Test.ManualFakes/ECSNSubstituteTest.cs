@@ -18,7 +18,7 @@ namespace ECS.Test.ManualFakes
             _tempSensor = Substitute.For<ITempSensor>();
 
             //Opretter ny unit-under-test af type ECS
-            _uut = new ECS(_tempSensor, _heater, 14);
+            _uut = new ECS(_tempSensor, _heater, 16);
         }
 
         //Opretter tests
@@ -39,6 +39,24 @@ namespace ECS.Test.ManualFakes
             _heater.RunSelfTest().Returns(heater);
             Assert.IsTrue(_uut.RunSelfTest());
         }
+
+        [Test]
+        public void Regulate_TempBelowThreshold_HeaterTurnOn()
+        {
+            _tempSensor.GetTemp().Returns(13);
+            _uut.Regulate();
+            _heater.Received(1).TurnOn();
+        }
+
+        [Test]
+        public void Regulate_TempAboveThreshold_HeaterTurnOff()
+        {
+            _tempSensor.GetTemp().Returns(17);
+            _uut.Regulate();
+            _heater.Received(1).TurnOff();
+        }
+
+
 
     }
 }
